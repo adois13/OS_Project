@@ -181,7 +181,7 @@ void Riscv::handleSupervisorTrap() {
         __putc('o');
         __putc('\n');
         
-        //thread_exit();
+        thread_exit();
         //printHex(sepc);
 
     }
