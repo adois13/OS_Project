@@ -4,6 +4,7 @@
 #include "hw.h"
 
 class Riscv {
+
 public:
 
     static time_t timerTickCounter;
@@ -25,8 +26,6 @@ public:
     {
         // supervisor software interrupt pending
         SIP_SSIP = (1 << 1),
-        // supervisor timer interrupt pending
-        SIP_STIP = (1 << 5), 
         // supervisor external interrupt pending
         SIP_SEIP = (1 << 9)
     };

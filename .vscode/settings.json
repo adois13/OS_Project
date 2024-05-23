@@ -4,6 +4,9 @@
         "system_error": "cpp",
         "format": "cpp",
         "*.tcc": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "list": "cpp",
+        "cstdio": "cpp",
+        "print": "cpp"
     }
 }

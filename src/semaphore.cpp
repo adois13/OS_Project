@@ -1,16 +1,22 @@
 #include "../h/semaphore.hpp"
 #include "../h/scheduler.hpp"
 
+
 _Semaphore::_Semaphore(unsigned init) : myHandle(nullptr), value(init) 
     {}
 
 _Semaphore::~_Semaphore() { };
+
+List _Semaphore::getBlocked() { return blockedQueue; }
 
 int _Semaphore::signal() {
     if(value++ < 0) {
         TCB* newUnblocked = blockedQueue.removeFirst();
         if(newUnblocked) {
             newUnblocked->setReady(true);
+            if(newUnblocked -> getTimeToSleep() > 0) {
+                newUnblocked -> setTimeToSleep(0);
+            }
             Scheduler::put(newUnblocked);
         }
     }
@@ -38,6 +44,7 @@ int _Semaphore::close() {
     while(thread) {
         thread -> setReady(true);
         thread -> setClosedSemFlag(true);
+        thread -> setTimeToSleep(0);
         Scheduler::put(thread);
         thread = blockedQueue.removeFirst();
     }
@@ -54,12 +61,16 @@ int _Semaphore::tryWait() {
 }
 
 int _Semaphore::timedWait(time_t timeout) {
+    TCB::running -> setSemaphore(this);
+    TCB::running -> setTimedWait(true);
     TCB::running -> setTimeToSleep(Riscv::timerTickCounter + timeout);
+    Scheduler::putToSleep(TCB::running);
+
     int ret = wait();
-    if(ret == -1) {
-        return SEMDEAD;
-    } else if(TCB::running -> getTimeToSleep() >= Riscv::timerTickCounter) {
+    
+    if(!TCB::running -> getTimedWait()) {
         return TIMEOUT;
-    }
-    return 0;
+    } else if(TCB::running -> getClosedSemFlag()) {
+        return SEMDEAD;
+    } return ret;
 }

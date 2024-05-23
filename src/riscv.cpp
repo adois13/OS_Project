@@ -4,7 +4,7 @@
 #include "../h/riscv.hpp"
 #include "../h/syscall_c.hpp"
 #include "../h/console.h"
-#include "../h/semaphore.hpp"
+#include "../h/console.hpp"
 
 void Riscv::newRunningSppSpie() {
     __asm__ volatile ("csrc sstatus, %0": : "r"(SSTATUS_SPP));
@@ -27,7 +27,13 @@ void Riscv::handleSupervisorTrap() {
         mc_sip(SIP_SSIP);
         Riscv::timerTickCounter++;
         Scheduler::sleepingThreadsHandler();
+
+        // timedWait: for every semaphore that has a thread that is waiting to be unblocked,
+        //            we shuold check if time has expired or if somebody else called signal()
+        //            set return value and put that thread in ready list in Scheduler
         
+
+
         TCB::running -> setTimeSliceCounter(TCB::running->getTimeSliceCounter() + 1);
         if(TCB::running -> getTimeSliceCounter() >= TCB::running->getTimeSlice()) 
         {
@@ -37,10 +43,14 @@ void Riscv::handleSupervisorTrap() {
 
     } else if(scause == 0x8000000000000009UL) {
         // supervisor external interrupt (console)
-        //clear external interrupt pending
+        // clear external interrupt pending
         
+        uint64 externalCause = plic_claim();
+        if(externalCause == 0x0a) {
+            _Console::setInterrupt(true);
+        }
+
         mc_sip(SIP_SEIP);
-        console_handler();
 
     } else if(scause == 0x0000000000000008UL || scause == 0x0000000000000009UL) {
         int sys_call = r_fp_register(10);
@@ -161,14 +171,16 @@ void Riscv::handleSupervisorTrap() {
                 w_fp_register(10, id -> timedWait(timeout));
                 break;
             }
-            case GETC: {
-                char retVal = __getc();
-                w_fp_register(10, retVal);
+            case PUTC: {
+                char c = (char)r_fp_register(11);
+                //__putc(c);
+                _Console::getConsole() -> putc(c);
                 break;
             }
-            case PUTC: {
-                char a1 = (char)r_fp_register(11);
-                __putc(a1);
+            case GETC: {
+                //char retVal = __getc();
+                char c = _Console::getConsole() -> getc();
+                w_fp_register(10, c);
                 break;
             }
         }
@@ -180,10 +192,7 @@ void Riscv::handleSupervisorTrap() {
         __putc('w');
         __putc('o');
         __putc('\n');
-        
-        thread_exit();
-        //printHex(sepc);
-
+        while(1);
     }
 
     Riscv::w_sepc(sepc);

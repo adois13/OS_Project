@@ -1,5 +1,5 @@
-#include "../h/riscv.hpp"
 #include "../h/TCB.hpp"
+#include "../h/riscv.hpp"
 #include "../h/scheduler.hpp"
 #include "../h/syscall_c.hpp"
 #include "../h/memoryAllocator.hpp"
@@ -17,7 +17,11 @@ TCB::TCB(Body body, void* arg, char* stack) :
             timeSlice(DEFAULT_TIME_SLICE),
             finished(false),
             ready(true),
-            timeSliceCounter(0)
+            closedSemFlag(false),
+            timeSliceCounter(0),
+            timedWaitFlag(false), 
+            handle(nullptr)
+            // removedByTimer(false)
     {}
 
 void TCB::dispatch()

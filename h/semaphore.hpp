@@ -2,10 +2,7 @@
 #define _semaphore_hpp
 
 #include "../h/syscall_c.hpp"
-#include "../h/hw.h"
 #include "../h/list.hpp"
-#include "../h/TCB.hpp"
-#include "../h/riscv.hpp"
 
 class _Semaphore {
 
@@ -19,6 +16,8 @@ public:
 
     int tryWait();
     int timedWait(time_t timeout);
+
+    List getBlocked();
 
 private:
     sem_t myHandle;

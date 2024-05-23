@@ -21,14 +21,19 @@ private:
 public:
     List() : head(nullptr), tail(nullptr) {}
 
-    List(const List &) = delete;
-    List &operator=(const List &) = delete;
+    //List(const List &) = delete;
+    //List &operator=(const List &) = delete;
 
     void addFirst(TCB *data);
     void addLast(TCB *data);
+    void remove(TCB* data);
+
     TCB *removeFirst();
+
     TCB *peekFirst();
+
     TCB *removeLast();
+
     TCB *peekLast();
 
     void insertSorted(TCB *thread);

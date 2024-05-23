@@ -4,12 +4,14 @@
 #include "../h/hw.h"
 #include "../h/riscv.hpp"
 
+class _Semaphore;
+
 class TCB {
 public:
     ~TCB() { delete stack; }
 
     using Body = void(*)(void*);
-
+    
     TCB(Body body, void* arg, char* stack);
 
     // finished flags
@@ -32,6 +34,13 @@ public:
     // unblocked after closing a semaphore
     inline bool getClosedSemFlag() const { return TCB::closedSemFlag; }
     inline void setClosedSemFlag(bool flag) { TCB::closedSemFlag = flag; }
+
+    // flags for timedWait
+    inline bool getTimedWait() const { return TCB::timedWaitFlag; } 
+    inline void setTimedWait(bool flag) { TCB::timedWaitFlag = flag;}  
+
+    inline _Semaphore* getSemaphore() const { return TCB::handle; }
+    inline void setSemaphore(_Semaphore* sem) { TCB::handle = sem; } 
 
     static void dispatch();
 
@@ -57,6 +66,9 @@ private:
     
     uint64 timeSliceCounter;
     time_t timeToSleep;
+
+    bool timedWaitFlag;
+    _Semaphore* handle;
 
     static void threadWrapper();
 

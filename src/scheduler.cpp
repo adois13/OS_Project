@@ -1,5 +1,6 @@
 #include "../h/scheduler.hpp"
 #include "../h/riscv.hpp"
+#include "../h/semaphore.hpp"
 
 Scheduler* Scheduler::getScheduler() {
     static Scheduler scheduler;
@@ -28,6 +29,10 @@ void Scheduler::sleepingThreadsHandler() {
     for(; sleepingThread && sleepingThread -> getTimeToSleep() <= Riscv::timerTickCounter;) {
         sleepingThread -> setTimeToSleep(0);
         sleepingThread -> setReady(true);
+        if(sleepingThread -> getTimedWait()) { 
+            sleepingThread -> setTimedWait(false);
+            sleepingThread -> getSemaphore() -> getBlocked().remove(sleepingThread);
+        }
         Scheduler::put(sleepingThread);
         sleepingThread = sleepingQueue.removeFirst();
         sleepingThread = sleepingQueue.peekFirst();

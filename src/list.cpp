@@ -17,6 +17,25 @@ void List::addLast(TCB *data) {
     }
 }
 
+void List::remove(TCB* data) {
+    if(!head) return;
+    
+    Node *curr = head, *prev = nullptr;
+
+    while(curr && curr -> data != data) {
+        prev = curr; curr = curr -> next;
+    }
+
+    if(prev && curr) {
+        prev -> next = curr -> next;
+    } else if(!prev && curr) {
+        head = curr -> next;
+    } else if (tail == curr) {
+        prev -> next = nullptr;
+        tail = prev;
+    }
+}
+
 TCB *List::removeFirst() {
     if (!head)
         return 0;
