@@ -1,14 +1,21 @@
 #include "../h/list.hpp"
+#include "../h/memoryAllocator.hpp"
 
 void List::addFirst(TCB *data) {
-    Node *node = new Node(data, head);
+    Node* node = (Node*) MemoryAllocator::getMemoryAllocator()->_malloc(1);
+    node->data = data;
+    node->next = head;
+    //Node *node = new Node(data, head);
     head = node;
     if (!tail)
         tail = head;
 }
 
 void List::addLast(TCB *data) {
-    Node *node = new Node(data, nullptr);
+    //Node *node = new Node(data, nullptr);
+    Node* node = (Node*) MemoryAllocator::getMemoryAllocator()->_malloc(1);
+    node->data = data;
+    node->next = nullptr;
     if (tail) {
         tail->next = node;
         tail = node;
@@ -48,7 +55,8 @@ TCB *List::removeFirst() {
     }
 
     TCB *ret = node->data;
-    delete node;
+    //delete node;
+    MemoryAllocator::getMemoryAllocator()->_free(node);
     return ret;
 }
 
@@ -77,7 +85,8 @@ TCB *List::removeLast() {
     tail = prev;
 
     TCB *ret = node->data;
-    delete node;
+    //delete node;
+    MemoryAllocator::getMemoryAllocator()->_free(node);
     return ret;
 }
 

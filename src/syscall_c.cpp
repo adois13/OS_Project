@@ -107,17 +107,21 @@ int sem_timedwait(sem_t id, time_t timeout) {
     __asm__ volatile("mv a2, %[timeout]" : : [timeout] "r"(timeout));
     __asm__ volatile("mv a1, %[id]" : : [id] "r"(id));
     __asm__ volatile("mv a0, %[code]" : : [code] "r"(SEM_TIMEDWAIT));
-
+    int volatile status;
     __asm__ volatile("ecall");
-    return 0;
+    
+    __asm__ volatile("mv %[status], a0" : [status] "=r"(status));
+    return status;
 }
 
 int sem_trywait(sem_t id) {
     __asm__ volatile("mv a1, %[id]" : : [id] "r"(id));
     __asm__ volatile("mv a0, %[code]" : : [code] "r"(SEM_TRYWAIT));
-
+    int volatile status;
     __asm__ volatile("ecall");
-    return 0;
+    
+    __asm__ volatile("mv %[status], a0" : [status] "=r"(status));
+    return status;
 }
 
 char getc() {
