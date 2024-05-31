@@ -3,59 +3,70 @@
 
 void List::addFirst(TCB *data) {
     Node* node = (Node*) MemoryAllocator::getMemoryAllocator()->_malloc(1);
+    if(!node) return;
+
     node->data = data;
     node->next = head;
-    //Node *node = new Node(data, head);
     head = node;
     if (!tail)
         tail = head;
 }
 
 void List::addLast(TCB *data) {
-    //Node *node = new Node(data, nullptr);
     Node* node = (Node*) MemoryAllocator::getMemoryAllocator()->_malloc(1);
+    if(!node) return;
+
     node->data = data;
     node->next = nullptr;
+
     if (tail) {
         tail->next = node;
         tail = node;
     } else {
-        head = tail = node;
+        head = tail = node;   
     }
 }
 
 void List::remove(TCB* data) {
-    if(!head) return;
-    
+    if (!head) return;
+
     Node *curr = head, *prev = nullptr;
 
-    while(curr && curr -> data != data) {
-        prev = curr; curr = curr -> next;
+    while (curr && curr->data != data) {
+        prev = curr; 
+        curr = curr->next; 
     }
 
-    if(prev && curr) {
-        prev -> next = curr -> next;
-    } else if(!prev && curr) {
-        head = curr -> next;
-    } else if (tail == curr) {
-        prev -> next = nullptr;
-        tail = prev;
+    if (!curr) return;
+
+    if (curr == head) {
+        head = curr->next;
+        if (!head) {
+            tail = nullptr;
+        }
+    } else {
+        prev->next = curr->next;
+        if (!curr->next) {
+            tail = prev;
+        }
     }
+
+    MemoryAllocator::getMemoryAllocator()->_free(prev);
+    MemoryAllocator::getMemoryAllocator()->_free(curr);
 }
 
 TCB *List::removeFirst() {
     if (!head)
-        return 0;
+        return nullptr;
 
     Node *node = head;
     head = head->next;
 
     if (!head) {
-        tail = 0;
+        tail = nullptr;
     }
 
     TCB *ret = node->data;
-    //delete node;
     MemoryAllocator::getMemoryAllocator()->_free(node);
     return ret;
 }
@@ -64,28 +75,32 @@ TCB *List::peekFirst() {
     if (head) {
         return head->data;
     }
-    return 0;
+    return nullptr;
 }
 
 TCB *List::removeLast() {
     if (!head)
-        return 0;
+        return nullptr;
 
-    Node *prev = 0;
-    for (Node *curr = head; curr && curr != tail; curr = curr->next) {
+    Node *prev = nullptr;
+    Node *curr = head;
+
+    while (curr && curr != tail) {
         prev = curr;
+        curr = curr->next;
     }
+
+    if (!curr) return nullptr;
 
     Node *node = tail;
     if (prev) {
-        prev->next = 0;
+        prev->next = nullptr;
+        tail = prev;
     } else {
-        head = 0;
+        head = tail = nullptr;
     }
-    tail = prev;
 
     TCB *ret = node->data;
-    //delete node;
     MemoryAllocator::getMemoryAllocator()->_free(node);
     return ret;
 }
@@ -94,11 +109,16 @@ TCB *List::peekLast() {
     if (tail) {
         return tail->data;
     }
-    return 0;
+    return nullptr;
 }
 
 void List::insertSorted(TCB *thread) {
-    Node *node = new Node(thread, nullptr);
+    Node* node = (Node*) MemoryAllocator::getMemoryAllocator()->_malloc(1);
+    if(!node) return;
+
+    node->data = thread;
+    node->next = nullptr;
+
     if (!head) {
         head = tail = node;
         return;
@@ -110,17 +130,15 @@ void List::insertSorted(TCB *thread) {
         prev = curr;
         curr = curr->next;
     }
-    if (curr && prev) {
-        prev->next = node;
-        node->next = curr;
-        return;
-    }
-    if (curr == nullptr) {
-        prev->next = node;
-        tail = node;
-    }
-    else if (prev == nullptr) {
+
+    if (!prev) {
         node->next = head;
         head = node;
+    } else if (!curr) {
+        prev->next = node;
+        tail = node;
+    } else {
+        prev->next = node;
+        node->next = curr;
     }
 }

@@ -17,18 +17,11 @@ public:
     int tryWait();
     int timedWait(time_t timeout);
 
-    List getBlocked();
+    List* getBlocked();
 
 private:
-    sem_t myHandle;
     int value;
-
     List blockedQueue;
-
-    enum retValue {
-        SEMDEAD = -1,
-        TIMEOUT = -2
-    };
 };
 
 #endif

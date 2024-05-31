@@ -3,3 +3,8 @@ test/*
 lib/*
 kernel.asm
 project-base-v1.1.zip
+kernel
+Makefile
+.vscode/settings.json
+
+

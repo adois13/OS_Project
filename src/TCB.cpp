@@ -17,11 +17,8 @@ TCB::TCB(Body body, void* arg, char* stack) :
             timeSlice(DEFAULT_TIME_SLICE),
             finished(false),
             ready(true),
-            closedSemFlag(false),
             timeSliceCounter(0),
-            timedWaitFlag(false), 
             handle(nullptr)
-            // removedByTimer(false)
     {}
 
 void TCB::dispatch()

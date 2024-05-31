@@ -2,9 +2,9 @@
 #include "../h/TCB.hpp"
 #include "../h/scheduler.hpp"
 #include "../h/riscv.hpp"
-#include "../h/syscall_c.hpp"
-#include "../h/console.h"
 #include "../h/console.hpp"
+
+
 
 void Riscv::newRunningSppSpie() {
     __asm__ volatile ("csrc sstatus, %0": : "r"(SSTATUS_SPP));
@@ -31,8 +31,6 @@ void Riscv::handleSupervisorTrap() {
         // timedWait: for every semaphore that has a thread that is waiting to be unblocked,
         //            we shuold check if time has expired or if somebody else called signal()
         //            set return value and put that thread in ready list in Scheduler
-        
-
 
         TCB::running -> setTimeSliceCounter(TCB::running->getTimeSliceCounter() + 1);
         if(TCB::running -> getTimeSliceCounter() >= TCB::running->getTimeSlice()) 
@@ -100,7 +98,7 @@ void Riscv::handleSupervisorTrap() {
                 TCB::dispatch();
                 break;
             }
-            case TIME_SLEEP: // pod znakom pitanja
+            case TIME_SLEEP:
             {   
                 time_t timeToSleep = (time_t)r_fp_register(11);
                 TCB::running -> setTimeToSleep(Riscv::timerTickCounter + timeToSleep);
@@ -173,25 +171,17 @@ void Riscv::handleSupervisorTrap() {
             }
             case PUTC: {
                 char c = (char)r_fp_register(11);
-                //__putc(c);
                 _Console::getConsole() -> putc(c);
                 break;
             }
             case GETC: {
-                //char retVal = __getc();
                 char c = _Console::getConsole() -> getc();
                 w_fp_register(10, c);
                 break;
             }
         }
 
-    } else if( scause == 0x0000000000000002UL) {
-        // unexpected trap cause
-        __putc('p');
-        __putc('i');
-        __putc('w');
-        __putc('o');
-        __putc('\n');
+    } else if( scause == 0x0000000000000005UL)  {
         while(1);
     }
 

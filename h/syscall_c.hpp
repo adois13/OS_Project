@@ -37,7 +37,7 @@ char getc();
 
 void putc(char c);
 
-enum instructionCode {
+enum operationCode {
     MEM_ALLOC = 0x01,
     MEM_FREE = 0x02,
     THREAD_CREATE = 0x11,

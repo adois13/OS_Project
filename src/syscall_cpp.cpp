@@ -35,8 +35,6 @@ int Thread::sleep(time_t time) {
 }
 
 
-// semaphores
-
 Semaphore::Semaphore(unsigned init) : myHandle(nullptr) {
     sem_open(&myHandle, init);
 }

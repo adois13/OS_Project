@@ -3,12 +3,12 @@
 
 #include "../h/hw.h"
 #include "../h/TCB.hpp"
+#include "../h/memoryAllocator.hpp"
 
 class List
 {
 private:
-    struct Node
-    {
+    struct Node {
         TCB *data;
         Node *next;
 
@@ -21,8 +21,8 @@ private:
 public:
     List() : head(nullptr), tail(nullptr) {}
 
-    //List(const List &) = delete;
-    //List &operator=(const List &) = delete;
+    List(const List &) = delete;
+    List &operator=(const List &) = delete;
 
     void addFirst(TCB *data);
     void addLast(TCB *data);

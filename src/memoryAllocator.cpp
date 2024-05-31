@@ -57,20 +57,6 @@ void* MemoryAllocator::_malloc(size_t size) // size-broj blokova za alokaciju
         newBlock -> next = prev -> next;
         prev -> next= newBlock;
     }
-    // else {
-    //     prev = usedBlocksHead;
-    //     while(prev -> next && prev -> next < curr) {
-    //         prev = prev -> next;
-    //     }
-    //     if(prev) {
-    //         newBlock->next = prev->next;
-    //         prev -> next = newBlock;
-    //     } else {
-    //         newBlock -> next = usedBlocksHead;
-    //         usedBlocksHead = newBlock;
-    //     }
-    // }
-
     return (void*)((uint64)newBlock + sizeof(BlockHeader));
 }
 

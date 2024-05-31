@@ -26,12 +26,16 @@ void Scheduler::putToSleep(TCB* thread) {
 void Scheduler::sleepingThreadsHandler() {
     TCB* sleepingThread = sleepingQueue.peekFirst();
 
-    for(; sleepingThread && sleepingThread -> getTimeToSleep() <= Riscv::timerTickCounter;) {
+    for(; sleepingThread && sleepingThread -> getTimeToSleep() <= Riscv::timerTickCounter; ) {
         sleepingThread -> setTimeToSleep(0);
         sleepingThread -> setReady(true);
-        if(sleepingThread -> getTimedWait()) { 
-            sleepingThread -> setTimedWait(false);
-            sleepingThread -> getSemaphore() -> getBlocked().remove(sleepingThread);
+        if(sleepingThread -> getStatus() == TIMED_WAIT) { 
+            sleepingThread -> setStatus(TIMEOUT);
+            sleepingThread -> getSemaphore() -> getBlocked() -> remove(sleepingThread);
+            sleepingThread -> setSemaphore(nullptr);
+        }
+        else {
+            sleepingThread->setStatus(REGULAR);
         }
         Scheduler::put(sleepingThread);
         sleepingThread = sleepingQueue.removeFirst();

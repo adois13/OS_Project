@@ -42,5 +42,4 @@ private:
     static bool interruptFlag;
 };
 
-
 #endif

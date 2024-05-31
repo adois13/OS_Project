@@ -2,9 +2,6 @@
 #include "../h/memoryAllocator.hpp"
 
 _Console::_Console() {
-    //inputBuffer = (char*) new char;
-    //outputBuffer = (char*) MemoryAllocator::getMemoryAllocator() -> _malloc(sizeof(BUFFER_SIZE));
-
     waitToRead = (_Semaphore*) new _Semaphore(0);
     waitToWrite = (_Semaphore*) new _Semaphore(BUFFER_SIZE);
     mutex = (_Semaphore*) new _Semaphore(1);
@@ -36,8 +33,6 @@ void _Console::putc(char c) {
 
 char _Console::getc() {
     waitToRead -> wait(); 
-    //functions are running properly. Adding timeouts and ensuring proper scheduling can further safeguard against potential deadlocks
-    //while((_Console::inputTail + 1) % BUFFER_SIZE == _Console::inputHead) { TCB::dispatch(); }
     char ret = inputBuffer[inputTail++];
     inputTail %= BUFFER_SIZE;
     return ret;

@@ -7,6 +7,10 @@
         "fstream": "cpp",
         "list": "cpp",
         "cstdio": "cpp",
-        "print": "cpp"
+        "print": "cpp",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "span": "cpp"
     }
 }

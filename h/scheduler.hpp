@@ -6,6 +6,8 @@
 
 class Scheduler {
 
+friend class _Semaphore;
+
 private:
     Scheduler(){}
 
